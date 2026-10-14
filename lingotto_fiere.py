@@ -69,7 +69,7 @@ class Stand:
         return self.prezzo < other.prezzo
 
     def __str__(self):
-        return f"{self.__codice_stand}, {self.__superficie}, {self.__padiglione}, {self.__prezzo}"
+        return f"{self.__codice_stand}, {self.__superficie}, {self.__padiglione}, {self.prezzo:.2f}"
 
 class Prese(Stand):
     def __init__(self, codice_stand, superficie, padiglione, prezzo, prese):
@@ -188,7 +188,7 @@ class LingottoFiere:
             # Cerchiamo se c'è uno stand associato a questo espositore
             stand_trovato = None
             for s in self.stand.values():
-                if s.espositore is not None and s.espositore.codice == i.codice:
+                if s.espositore == i:
                     stand_trovato = s
                     break
 
