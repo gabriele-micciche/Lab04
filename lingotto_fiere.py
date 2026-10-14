@@ -24,20 +24,41 @@ class Stand:
         self.__superficie = superficie
         self.__padiglione = padiglione
         self.__prezzo = prezzo
+        self.__disponibile = True
+        self.__espositore = None
 
 
     @property
     def codice(self):
         return self.__codice_stand
+
     @property
     def superficie(self):
         return self.__superficie
+
     @property
     def padiglione(self):
         return self.__padiglione
+
     @property
     def prezzo(self):
         return self.__prezzo
+
+    @property
+    def disponibile(self):
+        return self.__disponibile
+
+    @disponibile.setter
+    def disponibile(self, valore):
+        self.__disponibile = valore
+
+    @property
+    def espositore(self):
+        return self.__espositore
+
+    @espositore.setter
+    def espositore(self, espositore):
+        self.__espositore = espositore
 
     def __str__(self):
         return f"{self.__codice_stand}, {self.__superficie}, {self.__padiglione}, {self.__prezzo}"
@@ -51,6 +72,11 @@ class Prese(Stand):
     def prese(self):
         return self.__prese
 
+    # 3. Override della property prezzo con il calcolo del sovrapprezzo (+7% a presa)
+    @property
+    def prezzo(self):
+        return super().prezzo * (1 + 0.07 * self.__prese)
+
     def __str__(self):
         return f"{super().__str__()}, {self.prese}"
 
@@ -63,6 +89,11 @@ class Premium(Stand):
     @property
     def posizione(self):
         return self.__posizione
+
+    # 3. Override della property prezzo con il calcolo del sovrapprezzo (+30% fisso)
+    @property
+    def prezzo(self):
+        return super().prezzo * 1.30
 
     def __str__(self):
         return f"{super().__str__()}, {self.__posizione}"
@@ -101,7 +132,7 @@ class LingottoFiere:
                         codice = line[0]
                         superficie = line[1]
                         padiglione = line[2]
-                        prezzo = line[3]
+                        prezzo = float(line[3])
                         stand = Stand(codice, superficie, padiglione, prezzo)
                         self.stand[codice] = stand
 
@@ -109,7 +140,7 @@ class LingottoFiere:
                         codice = line[0]
                         superficie = line[1]
                         padiglione = line[2]
-                        prezzo = line[3]
+                        prezzo = float(line[3])
                         valore = line[4]
                         if valore.isdigit():
                             presa_elettrica = int(valore)
@@ -130,19 +161,22 @@ class LingottoFiere:
         if codice_espositore not in self.espositori:
             raise Exception(f"Espositore {codice_espositore} non trovato")
 
-        # Controllo se lo stand è già occupato
-        if codice_stand in self.prestiti:
-            raise Exception("Lo stand è già in prestito")
+        stand = self.stand[codice_stand]
+        espositore = self.espositori[codice_espositore]
 
-        # Controllo se l'espositore ha già un altro stand assegnato
-        for x in self.prestiti.values():
-            if x.codice == codice_espositore:
+        # Controllo disponibilità dello stand
+        if not stand.disponibile:
+            raise Exception("Lo stand è già assegnato")
+
+        # Controllo se l'espositore ha già un altro stand
+        for s in self.stand.values():
+            if s.espositore is not None and s.espositore.codice == codice_espositore:
                 raise Exception("L'espositore non è disponibile")
 
-        if codice_stand not in self.prestiti:
-            prestito = Espositori(codice_espositore, None, None)
-            self.prestiti[codice_stand] = prestito
-        return self.prestiti
+        # Assegnazione reale richiesta dalla traccia
+        stand.espositore = espositore
+        stand.disponibile = False
+
     def elenca_espositori(self):
         """Stampa l'elenco degli espositori mostrando, per ognuno, lo stand a cui è associato, quando applicabile """
 
