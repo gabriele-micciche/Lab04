@@ -15,8 +15,13 @@ class Espositori:
     def cognome(self):
         return self.__cognome
 
+    def __eq__(self, other):
+        if isinstance(other, Espositori):
+            return self.__codice_espositore == other.codice
+        return False
+
     def __str__(self):
-        return f"Codice {self.__codice_espositore}, {self.__nome}, {self.__cognome}"
+        return f"Codice {self.__codice_espositore}: {self.__nome} {self.__cognome}"
 
 class Stand:
     def __init__(self, codice_stand, superficie, padiglione, prezzo):
@@ -60,6 +65,9 @@ class Stand:
     def espositore(self, espositore):
         self.__espositore = espositore
 
+    def __lt__(self, other):
+        return self.prezzo < other.prezzo
+
     def __str__(self):
         return f"{self.__codice_stand}, {self.__superficie}, {self.__padiglione}, {self.__prezzo}"
 
@@ -72,7 +80,6 @@ class Prese(Stand):
     def prese(self):
         return self.__prese
 
-    # 3. Override della property prezzo con il calcolo del sovrapprezzo (+7% a presa)
     @property
     def prezzo(self):
         return super().prezzo * (1 + 0.07 * self.__prese)
@@ -90,7 +97,6 @@ class Premium(Stand):
     def posizione(self):
         return self.__posizione
 
-    # 3. Override della property prezzo con il calcolo del sovrapprezzo (+30% fisso)
     @property
     def prezzo(self):
         return super().prezzo * 1.30
@@ -104,7 +110,6 @@ class LingottoFiere:
         self.__nome = nome
         self.espositori = {}
         self.stand = {}
-        self.prestiti = {}
 
     """Aggiungere setter e getter se necessari"""
     @property
@@ -165,12 +170,12 @@ class LingottoFiere:
         espositore = self.espositori[codice_espositore]
 
         # Controllo disponibilità dello stand
-        if not stand.disponibile:
+        if stand.disponibile == False:
             raise Exception("Lo stand è già assegnato")
 
         # Controllo se l'espositore ha già un altro stand
         for s in self.stand.values():
-            if s.espositore is not None and s.espositore.codice == codice_espositore:
+            if s.espositore == espositore:
                 raise Exception("L'espositore non è disponibile")
 
         # Assegnazione reale richiesta dalla traccia
@@ -179,8 +184,19 @@ class LingottoFiere:
 
     def elenca_espositori(self):
         """Stampa l'elenco degli espositori mostrando, per ognuno, lo stand a cui è associato, quando applicabile """
+        for i in self.espositori.values():
+            # Cerchiamo se c'è uno stand associato a questo espositore
+            stand_trovato = None
+            for s in self.stand.values():
+                if s.espositore is not None and s.espositore.codice == i.codice:
+                    stand_trovato = s
+                    break
 
+            if stand_trovato is not None:
+                print(f"{i} - Stand: {stand_trovato.codice}")
+            else:
+                print(f"{i} - Nessuno stand associato")
 
     def stand_ordinati_per_prezzo(self):
         """Restituisce la lista ordinata degli stand in base al prezzo"""
-        # TODO
+        return sorted(self.stand.values())
