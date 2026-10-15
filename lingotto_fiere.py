@@ -183,18 +183,18 @@ class LingottoFiere:
 
     def elenca_espositori(self):
         """Stampa l'elenco degli espositori mostrando, per ognuno, lo stand a cui è associato, quando applicabile """
-        for i in self.espositori.values():
+        for x in self.espositori.values():
             # Cerchiamo se c'è uno stand associato a questo espositore
             stand_trovato = None
             for s in self.stand.values():
-                if s.espositore == i:
+                if s.espositore == x:
                     stand_trovato = s
                     break
 
             if stand_trovato is not None:
-                print(f"{i} - Stand: {stand_trovato.codice}")
+                print(f"{x} - Stand: {stand_trovato.codice}")
             else:
-                print(f"{i} - Nessuno stand associato")
+                print(f"{x} - Nessuno stand associato")
 
     def stand_ordinati_per_prezzo(self):
         """Restituisce la lista ordinata degli stand in base al prezzo"""
