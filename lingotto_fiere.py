@@ -121,43 +121,42 @@ class LingottoFiere:
 
     def carica_file_dati(self, file_path):
         """Carica i dati (stand ed espositori) dal file"""
-        try:
-            with open(file_path, "r", encoding="utf-8") as file:
-                reader = csv.reader(file)
 
-                for line in reader:
-                    if line[0].startswith("E"):
-                        codice = line[0]
-                        nome = line[1]
-                        cognome = line[2]
-                        espositore = Espositori(codice, nome, cognome)
-                        self.espositori[codice] = espositore
+        with open(file_path, "r", encoding="utf-8") as file:
+            reader = csv.reader(file)
 
-                    if line[0].startswith("S") and len(line) == 4:
-                        codice = line[0]
-                        superficie = line[1]
-                        padiglione = line[2]
-                        prezzo = float(line[3])
-                        stand = Stand(codice, superficie, padiglione, prezzo)
-                        self.stand[codice] = stand
+            for line in reader:
+                if line[0].startswith("E"):
+                    codice = line[0]
+                    nome = line[1]
+                    cognome = line[2]
+                    espositore = Espositori(codice, nome, cognome)
+                    self.espositori[codice] = espositore
 
-                    if line[0].startswith("S") and len(line) == 5:
-                        codice = line[0]
-                        superficie = line[1]
-                        padiglione = line[2]
-                        prezzo = float(line[3])
-                        valore = line[4]
-                        if valore.isdigit():
-                            presa_elettrica = int(valore)
-                            prese = Prese(codice, superficie, padiglione, prezzo, presa_elettrica)
-                            self.stand[codice] = prese
-                        else:
-                            posizione = valore
-                            premium = Premium(codice, superficie, padiglione, prezzo, posizione)
-                            self.stand[codice] = premium
+                if line[0].startswith("S") and len(line) == 4:
+                    codice = line[0]
+                    superficie = line[1]
+                    padiglione = line[2]
+                    prezzo = float(line[3])
+                    stand = Stand(codice, superficie, padiglione, prezzo)
+                    self.stand[codice] = stand
 
-        except FileNotFoundError:
-            raise Exception(f"File {file_path} non trovato")
+                if line[0].startswith("S") and len(line) == 5:
+                    codice = line[0]
+                    superficie = line[1]
+                    padiglione = line[2]
+                    prezzo = float(line[3])
+                    valore = line[4]
+                    if valore.isdigit():
+                        presa_elettrica = int(valore)
+                        prese = Prese(codice, superficie, padiglione, prezzo, presa_elettrica)
+                        self.stand[codice] = prese
+                    else:
+                        posizione = valore
+                        premium = Premium(codice, superficie, padiglione, prezzo, posizione)
+                        self.stand[codice] = premium
+
+
 
     def assegna_stand_a_espositore(self, codice_stand, codice_espositore):
         """Associa uno stand a un espositore"""
