@@ -23,7 +23,7 @@ def main():
             print(f"Il nuovo nome del centro fieristico è stato aggiornato con successo: {lingotto.nome}")
 
         elif scelta == "2":
-            file_path = "dati_lingoto.csv"
+            file_path = "dati_lingotto.csv"
             try:
                 lingotto.carica_file_dati(file_path)
                 print("Dati caricati correttamente.")
